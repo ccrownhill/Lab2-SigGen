@@ -33,7 +33,7 @@ int main(int argc, char **argv, char **env)   {
             top->clk = !top->clk;
             top->eval ();
         }
-	top->offset = OFFSET;
+	top->offset = abs(OFFSET);
 	// to make vbdValue() change the offset you would have to put:
 	// top->offset = vbdValue();
 	// plot waveforms with
