@@ -17,8 +17,8 @@ int main(int argc, char **argv, char **env)   {
 
     // initialize simulation inputs
     top->clk = 1;
-    top->rst = 1;
-    top->en = 0;
+    top->rst = 0;
+    top->en = 1;
     top->incr = 10;
     top->clk = 1;
 
@@ -31,8 +31,6 @@ int main(int argc, char **argv, char **env)   {
             top->clk = !top->clk;
             top->eval ();
         }
-        top->rst = (i < 2);
-        top->en = !(i < 2);
 	// to make vbdValue() change the frequency you would have to put:
 	// top->incr = vbdValue();
         if (Verilated::gotFinish())
