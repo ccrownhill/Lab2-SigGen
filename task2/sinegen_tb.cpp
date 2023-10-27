@@ -1,6 +1,7 @@
 #include "Vsinegen.h"
 #include "verilated.h"
 #include "verilated_vcd_c.h"
+#include "vbuddy.cpp"
 
 constexpr int OFFSET = 64;
 
@@ -16,6 +17,10 @@ int main(int argc, char **argv, char **env)   {
     VerilatedVcdC* tfp = new VerilatedVcdC;
     top -> trace (tfp, 99);
     tfp -> open ("sinegen.vcd");
+
+    // init Vbuddy
+    if(vbdOpen() !=1) return(-1);
+    vbdHeader("Lab 2");
 
     // initialize simulation inputs
     top->clk = 1;
@@ -33,15 +38,19 @@ int main(int argc, char **argv, char **env)   {
             top->clk = !top->clk;
             top->eval ();
         }
-	top->offset = abs(OFFSET);
-	// to make vbdValue() change the offset you would have to put:
-	// top->offset = vbdValue();
-	// plot waveforms with
-	// vbdPlot(int(top->dout1), 0, 255);
-	// vbdPlot(int(top->dout2), 0, 255);
-        if (Verilated::gotFinish())
-		exit(0);
+        top->offset = abs(vbdValue());
+        // to make vbdValue() change the offset you would have to put:
+        // top->offset = vbdValue();
+        // plot waveforms with
+        vbdPlot(int(top->dout1), 0, 255);
+        vbdPlot(int(top->dout2), 0, 255);
+        if (Verilated::gotFinish() || (vbdGetkey() == 'q')) {
+            vbdClose();
+            tfp->close();
+            exit(0);
+        }
     }
+    vbdClose();
     tfp->close();
     exit(0);
 }

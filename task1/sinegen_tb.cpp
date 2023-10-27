@@ -1,6 +1,7 @@
 #include "Vsinegen.h"
 #include "verilated.h"
 #include "verilated_vcd_c.h"
+#include "vbuddy.cpp"
 
 int main(int argc, char **argv, char **env)   {
     int i;
@@ -15,12 +16,15 @@ int main(int argc, char **argv, char **env)   {
     top -> trace (tfp, 99);
     tfp -> open ("sinegen.vcd");
 
+    // init Vbuddy
+    if(vbdOpen() !=1) return(-1);
+    vbdHeader("Lab 2: Counter");
+    vbdSetMode(0);
+
     // initialize simulation inputs
     top->clk = 1;
     top->rst = 0;
     top->en = 1;
-    top->incr = 10;
-    top->clk = 1;
 
     // run simulation for many clock cycles
     for (i=0; i<1000000; i++) {
@@ -31,11 +35,15 @@ int main(int argc, char **argv, char **env)   {
             top->clk = !top->clk;
             top->eval ();
         }
-	// to make vbdValue() change the frequency you would have to put:
-	// top->incr = vbdValue();
-        if (Verilated::gotFinish())
-		exit(0);
+        top->incr = vbdValue();
+        vbdCycle(i+1);
+        if (Verilated::gotFinish() || (vbdGetkey()=='q')) {
+            vbdClose();
+            tfp->close();
+		    exit(0);
+        }
     }
+    vbdClose();
     tfp->close();
     exit(0);
 }

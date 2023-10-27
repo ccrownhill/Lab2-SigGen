@@ -1,6 +1,7 @@
 #include "verilated.h"
 #include "verilated_vcd_c.h"
 #include "Vsigdelay.h"
+// #include "vbuddy.cpp"
 #include <fstream>
 
 #include "vbuddy.cpp"     // include vbuddy code
@@ -29,9 +30,10 @@ int main(int argc, char **argv, char **env) {
   tfp->open ("sigdelay.vcd");
  
   // init Vbuddy
-  //if (vbdOpen()!=1) return(-1);
-  //vbdHeader("L2T3:Delay");
+  if (vbdOpen()!=1) return(-1);
+  vbdHeader("L2T3:Delay");
   //vbdSetMode(1);        // Flag mode set to one-shot
+
 
   // initialize simulation input 
   top->clk = 1;
@@ -41,7 +43,7 @@ int main(int argc, char **argv, char **env) {
   top->offset = 64;
   
   // intialize variables for analogue output
-  //vbdInitMicIn(RAM_SZ);
+  vbdInitMicIn(RAM_SZ);
 
   // run simulation for MAX_SIM_CYC clock cycles
   for (simcyc=0; simcyc<MAX_SIM_CYC; simcyc++) {
@@ -52,21 +54,22 @@ int main(int argc, char **argv, char **env) {
       top->eval ();
     }
     //top->mic_signal = vbdMicValue();
-    infile >> top->mic_signal;
-    top->offset = 64;     // adjust delay by changing incr
-
+    // infile >> top->mic_signal;
+    // top->offset = 64;     // adjust delay by changing incr
+    top->mic_signal = vbdMicValue();
+    top->offset = abs(vbdValue());
     // plot RAM input/output, send sample to DAC buffer, and print cycle count
-    //vbdPlot(int (top->mic_signal), 0, 255);
-    //vbdPlot(int (top->delayed_signal), 0, 255);
-    //vbdCycle(simcyc);
+    vbdPlot(int (top->mic_signal), 0, 255);
+    vbdPlot(int (top->delayed_signal), 0, 255);
+    vbdCycle(simcyc);
 
     // either simulation finished, or 'q' is pressed
     //if ((Verilated::gotFinish()) || (vbdGetkey()=='q')) 
-    if ((Verilated::gotFinish())) 
+    if ((Verilated::gotFinish()) || (vbdGetkey() == 'q')) 
       exit(0);
   }
 
-  //vbdClose();     // ++++
+  vbdClose();     // ++++
   tfp->close(); 
   infile.close();
   printf("Exiting\n");
