@@ -11,7 +11,7 @@ module sinegen #(
 
 logic [ADDR_WIDTH-1:0] count;
 
-counter addr_counter (
+counter #(ADDR_WIDTH) addr_counter (
 	.clk (clk),
 	.rst (rst),
 	.en (en),
@@ -19,7 +19,7 @@ counter addr_counter (
 	.count (count)
 );
 
-rom sine_rom (
+rom #(ADDR_WIDTH, DATA_WIDTH) sine_rom (
 	.clk (clk),
 	.addr (count),
 	.dout (dout)
