@@ -10,7 +10,7 @@ module counter #(
 
 always_ff @ (posedge clk) begin
 	if (rst == 1'b1)
-		count <= 0;
+		count <= 8'b0;
 	else if (en == 1'b1)
 		count <= count + incr;
 end

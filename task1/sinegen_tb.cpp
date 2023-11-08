@@ -40,7 +40,7 @@ int main(int argc, char **argv, char **env)   {
         if (Verilated::gotFinish() || (vbdGetkey()=='q')) {
             vbdClose();
             tfp->close();
-		    exit(0);
+	    exit(0);
         }
     }
     vbdClose();
