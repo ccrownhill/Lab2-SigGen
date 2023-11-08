@@ -3,6 +3,8 @@
 #include "verilated_vcd_c.h"
 #include "vbuddy.cpp"
 
+#define MAX_CYCLE 1000000
+
 int main(int argc, char **argv, char **env)   {
     int i;
     int clk;
@@ -19,7 +21,6 @@ int main(int argc, char **argv, char **env)   {
     // init Vbuddy
     if(vbdOpen() !=1) return(-1);
     vbdHeader("Lab 2: Counter");
-    vbdSetMode(0);
 
     // initialize simulation inputs
     top->clk = 1;
@@ -27,7 +28,7 @@ int main(int argc, char **argv, char **env)   {
     top->en = 1;
 
     // run simulation for many clock cycles
-    for (i=0; i<1000000; i++) {
+    for (i=0; i < MAX_CYCLE; i++) {
 
         // dump variables into VCD file and toggle clock
         for (clk=0; clk<2; clk++) {
@@ -36,7 +37,8 @@ int main(int argc, char **argv, char **env)   {
             top->eval ();
         }
         top->incr = vbdValue();
-        vbdCycle(i+1);
+	vbdPlot(int (top->dout), 0, 255);
+        vbdCycle(i);
         if (Verilated::gotFinish() || (vbdGetkey()=='q')) {
             vbdClose();
             tfp->close();
